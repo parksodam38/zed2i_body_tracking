@@ -28,6 +28,7 @@ import pyzed.sl as sl
 import ogl_viewer.viewer as gl
 import cv_viewer.tracking_viewer as cv_viewer
 import numpy as np
+from playsound import playsound
 
 # Counter variables
 counter = 0
@@ -36,26 +37,19 @@ stage = None
 # Calculate angles
 def calculate_angle(a, b, c):
 
-    a = np.array(a); b = np.array(b); c = np.array(c)
-    ab = np.array(3); bc = np.array(3)
-
-    for i in range(3):
-        ab[i] = b[i] - a[i]
-        bc[i] = c[i] - b[i]
-
-    # Nomarlize ab and bc
-    ab = ab / np.linalg.norm(ab)
-    bc = bc / np.linalg.norm(bc)
-
     # Extract the angle from the dot products
     try:
-        cosine_angle = np.dot(ab, bc) / (np.linalg.norm(ab) * np.linalg.norm(bc))
-        angle = np.arccos(cosine_angle)
+        radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+        angle = np.abs(radians*180.0/np.pi)
+        
+        if angle >180.0:
+            angle = 360-angle
+       
     except:
         print("invalid cosine")
         exit()
 
-    return np.degrees(angle)
+    return angle
 
 if __name__ == "__main__":
     print("Running Body Tracking sample ... Press 'q' to quit")
@@ -136,25 +130,27 @@ if __name__ == "__main__":
             # Extract landmarks
             try:
                 # Get coordinates
-                left_shoulder = sl.get_idx_34(LEFT_SHOULDER)
-                left_elbow = sl.get_idx_34(LEFT_ELBOW)
-                left_wrist = sl.get_idx_34(LEFT_WRIST)
+                for obj in bodies.object_list:
+                    left_shoulder = obj.keypoint_2d[sl.BODY_PARTS.LEFT_SHOULDER.value]
+                    left_elbow = obj.keypoint_2d[sl.BODY_PARTS.LEFT_ElBOW.value]
+                    left_wrist = obj.keypoint_2d[sl.BODY_PARTS.LEFT_WRIST.value]
 
-                right_shoulder = sl.get_idx_34(RIGHT_SHOULDER)
-                right_elbow = sl.get_idx_34(RIGHT_ELBOW)
-                right_wrist = sl.get_idx_34(RIGHT_WRIST)
+                    right_shoulder = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_SHOULDER.value]
+                    right_elbow = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_EIBOW.value]
+                    right_wrist = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_WRIST.value]
 
-                # Calculate angle
-                angle1 = calculate_angle(left_shoulder, left_elbow, left_wrist)
-                angle2 = calculate_angle(right_shoulder, right_elbow, right_wrist)
+                    # Calculate angle
+                    angle1 = calculate_angle(left_shoulder, left_elbow, left_wrist)
+                    angle2 = calculate_angle(right_shoulder, right_elbow, right_wrist)
 
-                # Counter logic
-                if(angle1 and angle2 > 165):
-                    stage = "down"
-                if((angle1 and angle2 < 30) and stage == 'down'):
-                    stage = "up"
-                    counter +=1
-                    print(counter)
+                    # Counter logic
+                    if(angle1 and angle2 > 165):
+                        stage = "down"
+                    if((angle1 and angle2 < 30) and stage == 'down'):
+                        stage = "up"
+                        counter +=1
+                        print(counter)
+                        playsound("1.mp3")
             except:
                 pass
 
