@@ -22,8 +22,8 @@ def calculate_angle(a, b, c):
         radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
         angle = np.abs(radians*180.0/np.pi)
         
-        if angle >180.0:
-            angle = 360-angle
+        if angle > 180.0:
+            angle = 360 - angle
        
     except:
         print("invalid cosine")
@@ -136,15 +136,15 @@ if __name__ == "__main__":
 
             # Render counter
             # Setup status box
-            cv2.rectangle(image, (0,0), (225,73), (245,117,16), -1)
+            cv2.rectangle(image_left_ocv, (0,0), (225,73), (245,117,16), -1)
 
             # Rep data
-            cv2.putText(image, 'REPS', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-            cv2.putText(image, str(counter), (10,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+            cv2.putText(image_left_ocv, 'REPS', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(image_left_ocv, str(counter), (10,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
 
             # Stage data
-            cv2.putText(image, 'STAGE', (65,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-            cv2.putText(image, stage, (60,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+            cv2.putText(image_left_ocv, 'STAGE', (65,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(image_left_ocv, stage, (60,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
 
     viewer.exit()
 
