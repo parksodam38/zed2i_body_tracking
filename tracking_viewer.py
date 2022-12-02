@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 from cv_viewer.utils import *
 import pyzed.sl as sl
@@ -97,6 +98,7 @@ def render_2D(left_display, img_scale, objects, is_tracking_on, body_format):
                         if (left_angle and right_angle < 70) and stage =='down':
                             stage = "up"
                             counter +=1
+                            os.system("mpg123"+"1.mp3")
 
                     except:
                         pass
