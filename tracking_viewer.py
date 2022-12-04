@@ -8,11 +8,6 @@ import pyzed.sl as sl
 #----------------------------------------------------------------------
 #       2D VIEW
 #----------------------------------------------------------------------
-
-# Count variables
-counter = 0
-stage = None
-
 def calculate_angle(a,b,c):
     a = np.array(a) # First
     b = np.array(b) # Mid
@@ -78,6 +73,9 @@ def render_2D(left_display, img_scale, objects, is_tracking_on, body_format):
                         cv2.circle(left_display, (int(kp_spine[0]), int(kp_spine[1])), 3, color, -1)
                         
                     # Extract landmarks
+                    # Counter variables
+                    counter = 0
+                    stage = None
                     try:
                         # Get coordinates
                         left_shoulder = obj.keypoint_2d[sl.BODY_PARTS.LEFT_SHOULDER.value]
