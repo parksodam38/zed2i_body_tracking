@@ -81,24 +81,46 @@ def render_2D(left_display, img_scale, objects, is_tracking_on, body_format):
                     try:
                         # Get coordinates
                         left_shoulder = obj.keypoint_2d[sl.BODY_PARTS.LEFT_SHOULDER.value]
-                        left_elbow = obj.keypoint_2d[sl.BODY_PARTS.LEFT_EIBOW.value]
+                        left_elbow = obj.keypoint_2d[sl.BODY_PARTS.LEFT_ELBOW.value]
                         left_wrist = obj.keypoint_2d[sl.BODY_PARTS.LEFT_WRIST.value]
                             
                         right_shoulder = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_SHOULDER.value]
-                        right_elbow = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_EIBOW.value]
+                        right_elbow = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_ELBOW.value]
                         right_wrist = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_WRIST.value]
+                        
+                        left_shoulder_y = obj.keypoint_2d[sl.BODY_PARTS.LEFT_SHOULDER.value][1]
+                        right_shoulder_y = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_SHOULDER.value][1]
             
                         # Calculate angle
-                        left_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-                        right_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
+                        angle1 = calculate_angle(left_shoulder, left_elbow, left_wrist)
+                        angle2 = calculate_angle(right_shoulder, right_elbow, right_wrist)
             
                         # Curl counter logic
-                        if left_angle and right_angle > 100:
-                            stage = "down"
-                        if (left_angle and right_angle < 70) and stage =='down':
-                            stage = "up"
-                            counter +=1
-                            os.system("mpg123"+"1.mp3")
+                        #if angle1 and angle2 > 100:
+                        #    stage = "down"
+                        #if (angle1 and angle2 < 70) and stage =='down':
+                        #    stage = "up"
+                        #    counter +=1
+                        #    os.system("mpg123"+"1.mp3")
+                            
+                        if angle1 and angle2 > 70:
+                            stage = None
+                        else:
+                            stage = "correct"
+                            counter = 1
+                        
+                        if left_shoulder_y > right_shoulder_y + 50:
+                            stage = "right"
+                            counter = 1
+                        if right_shoulder_y > left_shoulder_y + 50:
+                            stage = "left"
+                            counter = 1
+                            
+                        if stage == "right" or "left":
+                            pass
+                        elif (counter == 1 and (angle1 and angle2 < 70)):
+                            stage = "correct"
+                            counter = 2
 
                     except:
                         pass
@@ -124,43 +146,7 @@ def render_2D(left_display, img_scale, objects, is_tracking_on, body_format):
                         and kp_b[0] < left_display.shape[1] and kp_b[1] < left_display.shape[0]
                         and kp_a[0] > 0 and kp_a[1] > 0 and kp_b[0] > 0 and kp_b[1] > 0 ):
                             cv2.line(left_display, (int(kp_a[0]), int(kp_a[1])), (int(kp_b[0]), int(kp_b[1])), color, 1, cv2.LINE_AA)
-                          
-                    # Extract landmarks
-                    try:
-                        # Get coordinates
-                        left_shoulder = obj.keypoint_2d[sl.BODY_PARTS.LEFT_SHOULDER.value]
-                        left_elbow = obj.keypoint_2d[sl.BODY_PARTS.LEFT_EIBOW.value]
-                        left_wrist = obj.keypoint_2d[sl.BODY_PARTS.LEFT_WRIST.value]
-                            
-                        right_shoulder = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_SHOULDER.value]
-                        right_elbow = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_EIBOW.value]
-                        right_wrist = obj.keypoint_2d[sl.BODY_PARTS.RIGHT_WRIST.value]
             
-                        # Calculate angle
-                        left_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-                        right_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
-            
-                        # Curl counter logic
-                        if left_angle and right_angle > 100:
-                            stage = "down"
-                        if (left_angle and right_angle < 70) and stage =='down':
-                            stage = "up"
-                            counter +=1
-
-                    except:
-                        pass
-        
-                    # Render counter and setup status box
-                    cv2.rectangle(left_display, (0,0), (225,73), (245,117,16), -1)
-        
-                    # Rep data
-                    cv2.putText(left_display, 'REPS', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-                    cv2.putText(left_display, str(counter), (10,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
-        
-                    # Stage data
-                    cv2.putText(left_display, 'STAGE', (65,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
-                    cv2.putText(left_display, stage, (60,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
-
                 # Skeleton joints
                 for kp in obj.keypoint_2d:
                     cv_kp = cvt(kp, img_scale)
